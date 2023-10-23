@@ -1,4 +1,4 @@
-# SVM-physics
+# Support Vector Machines for HEP
 
 This repository contains an implementation of support vector machines for high energy physics.
 
