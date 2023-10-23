@@ -1,6 +1,6 @@
 # SVM-physics
 
-This repository contains an implementation of support vector machines with public data.
+This repository contains an implementation of support vector machines for high energy physics.
 
 ## Framework installation
 
