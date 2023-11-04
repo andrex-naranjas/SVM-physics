@@ -35,6 +35,8 @@ radius2 = 10.0
 spherical_data_1, spherical_data_1_class = generate_spherical_data(num_points, radius1, 1)
 spherical_data_2, spherical_data_2_class = generate_spherical_data(num_points, radius2, -1)
 
+print(spherical_data_1_class)
+
 df_sph1 = pd.DataFrame(spherical_data_1_class, columns = ['X','Y','Z', 'class'])
 df_sph2 = pd.DataFrame(spherical_data_2_class, columns = ['X','Y','Z', 'class'])
 df_tot = pd.concat([df_sph1, df_sph2], axis=0)
