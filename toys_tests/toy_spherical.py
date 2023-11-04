@@ -40,7 +40,7 @@ df_sph2 = pd.DataFrame(spherical_data_2_class, columns = ['X','Y','Z', 'class'])
 df_tot = pd.concat([df_sph1, df_sph2], axis=0)
 print(df_tot)
 
-
+df_tot.to_csv('spherical_data.csv', index=False)
 
 # Plot spherical data
 fig = plt.figure()
