@@ -4,7 +4,7 @@ This repository contains an implementation of support vector machines for high e
 
 ## Framework installation
 
-To install you need to log to a linux machine (see below) and in the terminal:
+To install you need to log to a linux machine (see below) and in the terminal type:
 1. Clone the repository:
   ```
   git clone git@github.com:andrex-naranjas/SVM-physics.git
