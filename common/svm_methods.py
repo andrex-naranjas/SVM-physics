@@ -179,6 +179,15 @@ class KernelSum():
             suma += kernel[0] * kernel[1]
         return suma
 
+class Alexis():
+    def __init__(self,matrix_kernel, x, b):
+        self.matrix_kernel = matrix_kernel
+        self.x = x
+        self.b = b 
+        b = matrix_kernel* x
+         
+
+
 
 class KernelProd():
     """
