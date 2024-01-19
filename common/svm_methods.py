@@ -265,3 +265,19 @@ def compute_kernel(kernel_fcn, X_train, X_test=None, alphas=[1, 1]):
         sys.exit()
 
     return matrix_kernel
+
+
+
+
+    class Ejemplo():
+
+        def __init__(self,x):
+            self.x=np.array(x[0]) 
+            print("Realizando un producto de un escalar por un arreglo")
+
+        def mult_esca(self):
+            for a in range (1,5)
+                x1=a*self.x
+        return(x1)
+
+
