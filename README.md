@@ -5,7 +5,7 @@ This repository contains an implementation of support vector machines for high e
 ## Framework installation
 
 
-To install you need to log to a linux machine (see below) and in the terminal please type:
+To install you need to log to a linux machine (see below) and in the terminal type:
 
 1. Clone the repository:
   ```
