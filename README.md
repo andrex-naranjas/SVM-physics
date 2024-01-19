@@ -4,9 +4,6 @@ This repository contains an implementation of support vector machines for high e
 
 ## Framework installation
 
-Hola
-To install you need to log to a linux machine (see below) and in the terminal:
-
 
 To install you need to log to a linux machine (see below) and in the terminal type:
 
