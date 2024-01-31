@@ -21,7 +21,7 @@ species = "class"
 X_train = X_train.drop("z_eta_og", axis=1)
 X_train = X_train.drop("z_mass_og", axis=1)
 X_train = X_train.drop("z_pt_og", axis=1)
-X_train = X_train.drop("reco_Z_masses", axis=1)
+#X_train = X_train.drop("reco_Z_masses", axis=1)
 
 X_test = X_test.drop("z_eta_og", axis=1)
 X_test = X_test.drop("z_mass_og", axis=1)
