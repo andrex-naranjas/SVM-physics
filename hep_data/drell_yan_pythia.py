@@ -293,7 +293,7 @@ df = pd.DataFrame(data)
 print(df.head())
 
 # save the DataFrame to a CSV file
-df.to_csv('events_data_bkg.csv', index=False)
+df.to_csv('events_data_dy.csv', index=False)
 
 # end of the Pythia instance
 pythia.stat()
