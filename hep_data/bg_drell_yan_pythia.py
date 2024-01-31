@@ -1,13 +1,33 @@
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 import pythia8
 import pandas as pd
 
+process = str(sys.argv[1])
+n_events = int(sys.argv[2])
 # start Pythia
 pythia = pythia8.Pythia()
-pythia.readString("WeakSingleBoson:ffbar2gmZ = on")
+
+if process=="Wq": # not working atm
+    pythia.readString("WeakBosonAndParton:qg2Wq = on")  # Wq process
+elif process=="ZW":
+    pythia.readString("WeakDoubleBoson:ffbar2ZW = on")  # ZW process
+elif process=="WW":
+    pythia.readString("WeakDoubleBoson:ffbar2WW = on")  # WW process
+elif process=="ALL":
+    pythia.readString("WeakDoubleBoson:all = on")
+elif process=="TTBAR":
+    pythia.readString("Top:gg2ttbar = on")  # ttbar process OK
+elif process=="SOFTQCD": # not working atm
+    pythia.readString("SoftQCD:inelastic = on")  # Inelastic background process
+else:
+    sys.exit("proccess not supported")
+    
 pythia.init()
+
+print("Simulating events for the "+process+"  background...")
 
 mass_Z = []
 cos_theta_Z = []
@@ -37,18 +57,18 @@ z_pt_og = []
 pZ, pz, mass_z, eta_z, pt_z = 0, 0, 0, 0, 0
 
 # generate events
-n_events = 1000000
+#n_events = 10000
 selected_events = 0
 for i in range(n_events):
     if not pythia.next():
         continue
-    z_boson_found = False
+    wz_boson_found = False
     for particle in pythia.event:
-        if particle.id() == 23:  # Z boson
+        if particle.id() == 23 or abs(particle.id()) == 24:  # WZ boson
             # check if the Z boson mass is within a certain range
             z_mass = particle.m()
-            if abs(z_mass - 91.1876) < 10.0:  # select Z bosons near the Z boson mass (within 10 GeV)
-                z_boson_found = True
+            if abs(z_mass - 91.1876) < 20.0:  # select Z bosons near the Z boson mass (within 10 GeV)
+                wz_boson_found = True
                 pZ = particle.p()
                 pz = np.array([pZ[0], pZ[1], pZ[2]])
                 mass_z = pZ.mCalc()
@@ -57,7 +77,7 @@ for i in range(n_events):
                 # cos_theta_Z.append(pZ[3] / np.linalg.norm(pz))
                 # phi_Z.append(math.atan2(pZ[1], pZ[0]))
                 break
-    if not z_boson_found:
+    if not wz_boson_found:
         continue
     electrons_found = []
     positrons_found = []
@@ -65,16 +85,16 @@ for i in range(n_events):
         particle = pythia.event[i]
         if particle.id() == 11:  # electron
             mother = particle.mother1()
-            if pythia.event[mother].id() == 23:  # require electron from Z boson decay
+            if pythia.event[mother].id() == 23 or abs(pythia.event[mother].id()) == 24 :  # require electron from W boson decay
                 electrons_found.append(particle)
         elif particle.id() == -11:  # positron
             mother = particle.mother1()
-            if pythia.event[mother].id() == 23:  # require positron from Z boson decay
+            if pythia.event[mother].id() == 23 or abs(pythia.event[mother].id()) == 24:  # require positron from Z boson decay
                 positrons_found.append(particle)
     # match electrons with positrons from the same Z boson decay
     for electron in electrons_found:
         for positron in positrons_found:
-            if electron.mother1() == positron.mother1():
+            if electron.mother1() == positron.mother1() or True:
                 pElectron = electron.p()
                 pPositron = positron.p()
                 # get the reconstructed Z boson mass
@@ -262,7 +282,7 @@ axs[2, 6].text(0.05, 0.95, f'Integral: {np.sum(hist_pt_e)}', ha='left', va='top'
 
 # Adjust spacing between subplots
 plt.subplots_adjust(hspace=0.5, wspace=0.5)
-plt.show()
+plt.savefig("dy_bg_"+process+".pdf")
 
 # Create a dictionary to store the data
 data = {
@@ -293,7 +313,7 @@ df = pd.DataFrame(data)
 print(df.head())
 
 # save the DataFrame to a CSV file
-df.to_csv('events_data_bkg.csv', index=False)
+df.to_csv('events_data_bkg_'+process+'.csv', index=False)
 
 # end of the Pythia instance
 pythia.stat()
