@@ -18,6 +18,17 @@ X_train, Y_train, X_test, Y_test = \
 
 species = "class"
 
+X_train = X_train.drop("z_eta_og", axis=1)
+X_train = X_train.drop("z_mass_og", axis=1)
+X_train = X_train.drop("z_pt_og", axis=1)
+X_train = X_train.drop("reco_Z_masses", axis=1)
+
+X_test = X_test.drop("z_eta_og", axis=1)
+X_test = X_test.drop("z_mass_og", axis=1)
+X_test = X_test.drop("z_pt_og", axis=1)
+X_test = X_test.drop("reco_Z_masses", axis=1)
+
+
 model = SVC(C=50, gamma=0.01, kernel='linear', shrinking = True, probability = False, tol = 0.001)
 model.fit(X_train.drop(species, axis=1), Y_train)
 Y_pred_dec = model.decision_function(X_test.drop(species, axis=1))
