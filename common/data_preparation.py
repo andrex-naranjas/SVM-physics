@@ -125,7 +125,7 @@ class data_preparation:
             elif sig_back=="bkg": data_set = pd.read_csv(self.workpath+"/hep_data/events_data_bkg_ZW.csv")
             
         if not sampling:
-            data_set = resample(data_set, replace = False, n_samples = 10000, random_state = 3)
+            data_set = resample(data_set, replace = False, n_samples = 2000, random_state = 3)
 
         data_set = data_set.copy()
         
