@@ -262,7 +262,7 @@ axs[2, 6].text(0.05, 0.95, f'Integral: {np.sum(hist_pt_e)}', ha='left', va='top'
 
 # Adjust spacing between subplots
 plt.subplots_adjust(hspace=0.5, wspace=0.5)
-plt.show()
+plt.savefig("dy_signal_Z.pdf")
 
 # Create a dictionary to store the data
 data = {
@@ -293,7 +293,7 @@ df = pd.DataFrame(data)
 print(df.head())
 
 # save the DataFrame to a CSV file
-df.to_csv('events_data_dy.csv', index=False)
+df.to_csv('events_data_dy_Z.csv', index=False)
 
 # end of the Pythia instance
 pythia.stat()

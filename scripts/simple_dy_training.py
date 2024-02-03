@@ -6,6 +6,18 @@ from sklearn.metrics import auc,roc_auc_score
 from sklearn.metrics import accuracy_score,precision_score
 from common.data_preparation import data_preparation
 from common.svm_methods import RBFPrecomputed
+import numpy as np
+
+def make_unitary(matrix):
+    # Perform singular value decomposition (SVD)
+    U, S, Vh = np.linalg.svd(matrix, full_matrices=False)
+
+    # Construct a unitary matrix from the SVD
+    unitary_matrix = np.dot(U, Vh)
+
+    return unitary_matrix
+
+
 
 
 if len(sys.argv) != 2:
@@ -47,15 +59,36 @@ Y_pred = model.predict(X_test.drop(species, axis=1))
 acc = accuracy_score(Y_test, Y_pred)
 print("Testing accuracy radial kernel", acc)
 
-# precomputed
-test_rbf = RBFPrecomputed([X_train.drop(species, axis=1)])
-matrix_test = RBFPrecomputed([X_test.drop(species, axis=1), X_train.drop(species, axis=1)])
-# precomputed kernel, explicit calculation
-matrix_ep = test_rbf.compute()
+# # precomputed
+# test_rbf = RBFPrecomputed([X_train.drop(species, axis=1)])
+# matrix_test = RBFPrecomputed([X_test.drop(species, axis=1), X_train.drop(species, axis=1)])
+# # precomputed kernel, explicit calculation
+# matrix_ep = test_rbf.compute()
+# model_ep = SVC(C=50, gamma=0.01, kernel="precomputed")
+# model_ep.fit(matrix_ep, Y_train)
+# matrix_test_ep = matrix_test.compute()
+# Y_pred_ep = model_ep.predict(matrix_test_ep)
+# acc_ep = accuracy_score(Y_test, Y_pred_ep)
+# prc_ep = precision_score(Y_test, Y_pred_ep)
+# print("Testing accuracy precom kernel", acc_ep)
+
+
+from common.svm_methods import PolyPrecomputed
+kernel_comp_1 = PolyPrecomputed([X_train.drop(species, axis=1)], gamma=1, deg=3, coef=0)
+kernel_test_comp = PolyPrecomputed([X_test.drop(species, axis=1), X_train.drop(species, axis=1)], gamma=1, deg=3, coef=0)
+kernel_comp = make_unitary(kernel_comp_1.compute())
+kernel_comp_og = kernel_comp_1.compute()
+kernel_test_comp = make_unitary(kernel_test_comp.compute())
+print("testing...")
+print(kernel_comp.shape, kernel_comp_og.shape)
+print(type(kernel_comp), type(kernel_comp_og))
+
+input()
 model_ep = SVC(C=50, gamma=0.01, kernel="precomputed")
-model_ep.fit(matrix_ep, Y_train)
-matrix_test_ep = matrix_test.compute()
-Y_pred_ep = model_ep.predict(matrix_test_ep)
+print("model..")
+model_ep.fit(kernel_comp, Y_train)
+print("trained")
+Y_pred_ep = model_ep.predict(kernel_test_comp)
 acc_ep = accuracy_score(Y_test, Y_pred_ep)
 prc_ep = precision_score(Y_test, Y_pred_ep)
 print("Testing accuracy precom kernel", acc_ep)
