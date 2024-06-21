@@ -20,6 +20,7 @@ eta_e = []
 pX_e = []
 pY_e = []
 pZ_e = []
+e_e = []
 # positron
 cos_theta_pos = []
 phi_pos = []
@@ -28,6 +29,7 @@ eta_pos = []
 pX_pos = []
 pY_pos = []
 pZ_pos = []
+e_pos = []
 
 z_eta_og = []
 reconstructed_Z_masses = []
@@ -88,6 +90,7 @@ for i in range(n_events):
                 pX_e.append(pElectron[0])
                 pY_e.append(pElectron[1])
                 pZ_e.append(pElectron[2])
+                e_e.append(pElectron.e())
                 # get positron kinematics
                 cos_theta_pos.append(pPositron[3] / pPositron.pAbs())
                 phi_pos.append(math.atan2(pPositron[2], pPositron[1]))
@@ -96,6 +99,7 @@ for i in range(n_events):
                 pX_pos.append(pPositron[0])
                 pY_pos.append(pPositron[1])
                 pZ_pos.append(pPositron[2])
+                e_pos.append(pPositron.e())
                 # Z boson kinematics
                 cos_theta_Z.append(pZ[3] / np.linalg.norm(pz))
                 phi_Z.append(math.atan2(pZ[1], pZ[0]))
@@ -105,11 +109,11 @@ for i in range(n_events):
                 # z_pt_og.append(pt_z)
                 
                 selected_events += 1
-                if selected_events == 10000:
+                if selected_events == 200000:
                     break  # Stop after selecting a fixed number of events for each variable
-        if selected_events == 10000:
+        if selected_events == 200000:
             break  # Stop after selecting a fixed number of events for each variable
-    if selected_events == 10000:
+    if selected_events == 200000:
         break  # Stop after selecting a fixed number of events for each variable
 
 # Create a single figure for all histograms
@@ -145,7 +149,7 @@ axs[0, 3].set_title('Z eta')
 axs[0, 3].text(0.05, 0.95, f'Integral: {np.sum(hist_eta_z)}', ha='left', va='top', transform=axs[0, 3].transAxes)
 
 # Plot histogram of reconstructed Z boson mass
-hist_reco_Z_mass, bins_reco_Z_mass, _ = axs[0, 4].hist(reconstructed_Z_masses, bins=50, range=(60, 120)) #, histtype='step')
+hist_reco_Z_mass, bins_reco_Z_mass, _ = axs[0, 4].hist(reconstructed_Z_masses, bins=50, range=(0, 120)) #, histtype='step')
 axs[0, 4].set_xlabel('Reco Z Mass')
 axs[0, 4].set_ylabel('Counts')
 axs[0, 4].set_title('Reco Z Boson Mass')
@@ -157,6 +161,15 @@ axs[0, 5].set_xlabel('pT')
 axs[0, 5].set_ylabel('Counts')
 axs[0, 5].set_title('Z pT')
 axs[0, 5].text(0.05, 0.95, f'Integral: {np.sum(hist_eta_z)}', ha='left', va='top', transform=axs[0, 5].transAxes)
+
+
+# add electron energy
+hist_e_e, bins_e_e, _ = axs[0, 6].hist(e_pos, bins=50)#, range=(60, 120))
+axs[0, 6].set_xlabel('e')
+axs[0, 6].set_ylabel('Counts')
+axs[0, 6].set_title('ele energy')
+axs[0, 6].text(0.05, 0.95, f'Integral: {np.sum(hist_eta_z)}', ha='left', va='top', transform=axs[0, 6].transAxes)
+
 
 
 # electron variables
@@ -262,7 +275,7 @@ axs[2, 6].text(0.05, 0.95, f'Integral: {np.sum(hist_pt_e)}', ha='left', va='top'
 
 # Adjust spacing between subplots
 plt.subplots_adjust(hspace=0.5, wspace=0.5)
-plt.savefig("dy_signal_Z.pdf")
+plt.savefig("./plots/dy_signal_Z.pdf")
 
 # Create a dictionary to store the data
 data = {
@@ -275,6 +288,7 @@ data = {
     'pX_e': pX_e,
     'pY_e': pY_e,
     'pZ_e': pZ_e,
+    'e_e': e_e,
     'cos_theta_pos': cos_theta_pos,
     'phi_pos': phi_pos,
     'pT_pos': pT_pos,
@@ -282,6 +296,7 @@ data = {
     'pX_pos': pX_pos,
     'pY_pos': pY_pos,
     'pZ_pos': pZ_pos,
+    'e_pos': e_pos,
     'z_eta_og': z_eta_og,
     'z_mass_og': z_mass_og,
     'z_pt_og': z_pt_og,
@@ -293,7 +308,7 @@ df = pd.DataFrame(data)
 print(df.head())
 
 # save the DataFrame to a CSV file
-df.to_csv('events_data_dy_Z.csv', index=False)
+df.to_csv('./data/events_data_dy_Z_test.csv', index=False)
 
 # end of the Pythia instance
 pythia.stat()

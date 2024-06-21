@@ -48,7 +48,7 @@ class BoostedSVM:
 
         while True:
             if myGamma > self.gammaEnd+stepGamma: return 0, 0, None, None
-            errorOut = 0.0            
+            errorOut = 0.0
             svcB = SVC(C=self.C,
                        kernel=self.myKernel,
                        degree=self.myDegree,
@@ -58,6 +58,8 @@ class BoostedSVM:
                        probability=False,
                        tol=0.001,
                        cache_size=1000)
+            
+            print(np.sum(myWeights), "normalization check")
             svcB.fit(x_train, y_train, sample_weight=myWeights)
             y_pred = svcB.predict(x_train)
             # error calculation
@@ -65,19 +67,24 @@ class BoostedSVM:
                 if (y_train[i] != y_pred[i]):
                     errorOut += myWeights[i]
 
+            print(errorOut, "errorrrs")
+
             error_pass = errorOut < 0.499 and errorOut > 0.0
             # Diverse_AdaBoost, if Diversity=False, diversity plays no role in classifier selection
             div_pass, tres = self.pass_diversity(flag_div, value_div, count, error_pass)
             if(error_pass and not div_pass): value_div = self.diversity(x_train, y_pred, count)
-            if self.debug: print('error_flag: %5s | div_flag: %5s | div_value: %5s | Threshold: %5s | no. data: %5s | count: %5s | error: %5.2f | gamma: %5.2f | diversities  %3s '
+            if self.debug: print('error_flag: %5s | div_flag: %5s | div_value: %5s | Threshold: %5s | no. data: %5s | count: %5s | error: %5.5f | gamma: %5.2f | diversities  %3s '
                   %(error_pass, div_pass, value_div, tres, len(y_pred), count, errorOut, myGamma, len(self.diversities)))
             
             # require an error below 50%, avoid null errors and diversity requirement
             if(error_pass and div_pass):
+                print(myGamma, "rufina  ", errorOut)
                 #myGamma -= stepGamma
                 break
-
             myGamma += stepGamma
+
+
+        myGamma += stepGamma
 
         return myGamma, errorOut, y_pred, svcB
 
@@ -99,7 +106,8 @@ class BoostedSVM:
         div_flag, div_value = self.m_div_flag, 0
 
         gammaMax = self.gammaEnd        
-        gammaStep, gammaVar = gammaMax/100., 1/100.
+        gammaStep = 0.5#gammaMax/100.
+        gammaVar  =  1#/100.
         cost, count, norm = 1, 0, 0.0
         h_list = []
 
@@ -117,8 +125,11 @@ class BoostedSVM:
             self.weights_list.append(new_weights)
             if self.debug : 
                 print("----------------------------------------------------------------------------------------------------------   -")
+                # print(new_weights)
+                # input()
             # Call svm, weight samples, iterate sigma(gamma), get errors, obtain predicted classifier (h as an array)
             gammaVar, error, h, learner = self.svc_train(gammaVar, gammaStep, X_train, Y_train, new_weights, count, div_flag, div_value)
+            print(gammaVar, "perrito")
 
             if(gammaVar > gammaMax or error <= 0):# or learner == None or h == None):
                 break
@@ -324,7 +335,7 @@ class BoostedSVM:
         """"
         Validate assumptions about format of input data. Expecting response variable to be formatted as ±1
         """
-        assert set(y) == {-1, 1} or set(y) == {-1} or set(y) == {1} # extra conditions for highly imbalance
+        assert set(y) == {-1, 1} or set(y)=={0,1} or set(y) == {-1} or set(y) == {1} # extra conditions for highly imbalance
         # If input data already is numpy array, do nothing
         if type(X) == type(np.array([])) and type(y) == type(np.array([])):
             return X, y

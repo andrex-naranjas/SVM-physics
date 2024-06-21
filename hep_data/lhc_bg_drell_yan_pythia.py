@@ -71,16 +71,16 @@ for i in range(n_events):
         if particle.id() == 23 or abs(particle.id()) == 24:  # WZ boson
             # check if the Z boson mass is within a certain range
             z_mass = particle.m()
-            if abs(z_mass - 91.1876) < 20.0:  # select Z bosons near the Z boson mass (within 10 GeV)
-                wz_boson_found = True
-                pZ = particle.p()
-                pz = np.array([pZ[0], pZ[1], pZ[2]])
-                mass_z = pZ.mCalc()
-                eta_z = pZ.eta()
-                pt_z = pZ.pT()
-                # cos_theta_Z.append(pZ[3] / np.linalg.norm(pz))
-                # phi_Z.append(math.atan2(pZ[1], pZ[0]))
-                break
+            # if abs(z_mass - 91.1876) < 20.0:  # select Z bosons near the Z boson mass (within 10 GeV)
+            wz_boson_found = True
+            pZ = particle.p()
+            pz = np.array([pZ[0], pZ[1], pZ[2]])
+            mass_z = pZ.mCalc()
+            eta_z = pZ.eta()
+            pt_z = pZ.pT()
+            # cos_theta_Z.append(pZ[3] / np.linalg.norm(pz))
+            # phi_Z.append(math.atan2(pZ[1], pZ[0]))
+            break
     if not wz_boson_found:
         continue
     electrons_found = []
@@ -89,54 +89,57 @@ for i in range(n_events):
         particle = pythia.event[i]
         if particle.id() == 11:  # electron
             mother = particle.mother1()
-            if pythia.event[mother].id() == 23 or abs(pythia.event[mother].id()) == 24 :  # require electron from W boson decay
+            if pythia.event[mother].id() == 23 or abs(pythia.event[mother].id()) == 24 or True:  # require electron from W boson decay
                 electrons_found.append(particle)
         elif particle.id() == -11:  # positron
             mother = particle.mother1()
-            if pythia.event[mother].id() == 23 or abs(pythia.event[mother].id()) == 24:  # require positron from Z boson decay
+            if pythia.event[mother].id() == 23 or abs(pythia.event[mother].id()) == 24 or True:  # require positron from Z boson decay
                 positrons_found.append(particle)
     # match electrons with positrons from the same Z boson decay
     for electron in electrons_found:
         for positron in positrons_found:
-            if electron.mother1() == positron.mother1() or True:
+            # if electron.mother1() == positron.mother1() or True:
+            if electron.charge() != positron.charge():
                 pElectron = electron.p()
                 pPositron = positron.p()
                 # get the reconstructed Z boson mass
                 reconstructed_Z_mass = (pElectron + pPositron).mCalc()
-                reconstructed_Z_masses.append(reconstructed_Z_mass)
-                # get electron kinematics
-                cos_theta_e.append(pElectron[3] / pElectron.pAbs())
-                phi_e.append(math.atan2(pElectron[2], pElectron[1]))
-                pT_e.append(pElectron.pT())
-                eta_e.append(pElectron.eta())
-                pX_e.append(pElectron[0])
-                pY_e.append(pElectron[1])
-                pZ_e.append(pElectron[2])
-                e_e.append(pElectron.e())
-                # get positron kinematics
-                cos_theta_pos.append(pPositron[3] / pPositron.pAbs())
-                phi_pos.append(math.atan2(pPositron[2], pPositron[1]))
-                pT_pos.append(pPositron.pT())
-                eta_pos.append(pPositron.eta())
-                pX_pos.append(pPositron[0])
-                pY_pos.append(pPositron[1])
-                pZ_pos.append(pPositron[2])
-                e_pos.append(pPositron.e())
-                # Z boson kinematics
-                cos_theta_Z.append(pZ[3] / np.linalg.norm(pz))
-                phi_Z.append(math.atan2(pZ[1], pZ[0]))
-                z_mass_og.append(mass_z)
-                z_eta_og.append(eta_z)
-                z_pt_og.append((pElectron + pPositron).pT())
-                # z_pt_og.append(pt_z)
+
+                if pElectron.pT()>25.0 and pPositron.pT()>25.0:
+                    reconstructed_Z_masses.append(reconstructed_Z_mass)
+                    # get electron kinematics
+                    cos_theta_e.append(pElectron[3] / pElectron.pAbs())
+                    phi_e.append(math.atan2(pElectron[2], pElectron[1]))
+                    pT_e.append(pElectron.pT())
+                    eta_e.append(pElectron.eta())
+                    pX_e.append(pElectron[0])
+                    pY_e.append(pElectron[1])
+                    pZ_e.append(pElectron[2])
+                    e_e.append(pElectron.e())
+                    # get positron kinematics
+                    cos_theta_pos.append(pPositron[3] / pPositron.pAbs())
+                    phi_pos.append(math.atan2(pPositron[2], pPositron[1]))
+                    pT_pos.append(pPositron.pT())
+                    eta_pos.append(pPositron.eta())
+                    pX_pos.append(pPositron[0])
+                    pY_pos.append(pPositron[1])
+                    pZ_pos.append(pPositron[2])
+                    e_pos.append(pPositron.e())
+                    # Z boson kinematics
+                    cos_theta_Z.append(pZ[3] / np.linalg.norm(pz))
+                    phi_Z.append(math.atan2(pZ[1], pZ[0]))
+                    z_mass_og.append(mass_z)
+                    z_eta_og.append(eta_z)
+                    z_pt_og.append((pElectron + pPositron).pT())
+                    # z_pt_og.append(pt_z)
                 
-                selected_events += 1
-                if selected_events == 10000:
-                    break  # Stop after selecting a fixed number of events for each variable
-        if selected_events == 10000:
-            break  # Stop after selecting a fixed number of events for each variable
-    if selected_events == 10000:
-        break  # Stop after selecting a fixed number of events for each variable
+    #             selected_events += 1
+    #             if selected_events == 90000:
+    #                 break  # Stop after selecting a fixed number of events for each variable
+    #     if selected_events == 90000:
+    #         break  # Stop after selecting a fixed number of events for each variable
+    # if selected_events == 90000:
+    #     break  # Stop after selecting a fixed number of events for each variable
 
 # Create a single figure for all histograms
 fig, axs = plt.subplots(3, 7, figsize=(20, 15), subplot_kw={'aspect': 'auto'})
