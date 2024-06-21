@@ -14,6 +14,7 @@ from common import stats_summary as ss
 
 process = int(sys.argv[1])       # batch process
 name = str(sys.argv[2])          # sample name
+balance_name = str(sys.argv[2])  # balance name
 path = str(sys.argv[3])          # path where code lives
 boot_kfold = str(sys.argv[4])    # use bootstrap or kfold
 exotic_single = str(sys.argv[5]) # use exotic or standard classifiers
@@ -21,8 +22,8 @@ exotic_single = str(sys.argv[5]) # use exotic or standard classifiers
 model_auc = mm.model_loader_batch(process, exotic_single=exotic_single)[1]
 model_auc_names = mm.model_loader_batch(process, exotic_single=exotic_single)[0]
 n_cycles = 10
-k_folds  = 4
-n_reps   = 3
+k_folds  = 5
+n_reps   = 5
 roc_area = "deci"
 
 if model_auc[3] == "absvm":
@@ -31,13 +32,19 @@ if model_auc[3] == "absvm":
 print('sample:', name, 'model name:', model_auc[0], '  validation', boot_kfold)
 start = datetime.datetime.now()
 
-auc, prc, f1, rec, acc, gmn, time, n_class, n_train = ss.cross_validation(sample_name=name,
+auc, prc, f1, rec, acc, gmn, time, n_class, n_train = ss.cross_validation(sample_name="DY",
+                                                                          balance_name=balance_name,
                                                                           model=model_auc[1],
                                                                           is_precom=model_auc[2],
                                                                           kernel_fcn=model_auc[3],
                                                                           roc_area=roc_area,
-                                                                          selection=model_auc[3+1], GA_mut=model_auc[4+1], GA_score=model_auc[5+1],
-                                                                          GA_selec=model_auc[6+1], GA_coef=model_auc[7+1], kfolds=k_folds, n_reps=n_reps, path=path)
+                                                                          selection=model_auc[3+1],
+                                                                          GA_mut=model_auc[4+1],
+                                                                          GA_score=model_auc[5+1],
+                                                                          GA_selec=model_auc[6+1],
+                                                                          GA_coef=model_auc[7+1],
+                                                                          kfolds=k_folds, n_reps=n_reps, path=path)
+
 
 col_auc = pd.DataFrame(data=auc,    columns=["auc"])
 col_prc = pd.DataFrame(data=prc,    columns=["prc"])
