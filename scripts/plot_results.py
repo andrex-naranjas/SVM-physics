@@ -5,12 +5,16 @@ import matplotlib.pyplot as plt
 import os
 
 
-sample_list = ['titanic', 'cancer', 'german', 'heart', 'solar', 'car', 'ecoli', 'wine', 'abalone'] # 'connect','adult']
-color = ['red','blue','green','black','orange','brown','magenta','peru','indigo'] #,'cyan','slategray']
+sample_list = ['half_half', '1quart_3quart', '3quart_1quart', '1oct_7oct', '7oct_1oct']
+color = ['red','blue','green','black','orange']
+
+# sample_list = ['titanic', 'cancer', 'german', 'heart', 'solar', 'car', 'ecoli', 'wine', 'abalone'] # 'connect','adult']
+# color = ['red','blue','green','black','orange','brown','magenta','peru','indigo'] #,'cyan','slategray']
 mark = ['P','s','^','>','h','o','v','+','<','p','x']
 workpath = os.getcwd()
 print(workpath)
-path = workpath + "/results/stats_results/titanic/kfold"
+
+path = workpath + "/results/stats_results/half_half/kfold"
 dire_list = os.listdir(path)
 
 p_file = []
