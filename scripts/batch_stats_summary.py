@@ -23,11 +23,11 @@ model_auc = mm.model_loader_batch(process, exotic_single=exotic_single)[1]
 model_auc_names = mm.model_loader_batch(process, exotic_single=exotic_single)[0]
 n_cycles = 10
 k_folds  = 5
-n_reps   = 5
+n_reps   = 3
 roc_area = "deci"
 
-if model_auc[3] == "absvm":
-    roc_area = "absvm"
+if model_auc[2] == "absv":
+    roc_area = "absv"
 
 print('sample:', name, 'model name:', model_auc[0], '  validation', boot_kfold)
 start = datetime.datetime.now()

@@ -10,10 +10,12 @@ import numpy as np
 from sklearn.svm import SVC
 from sklearn.svm import LinearSVC
 
+# framework includes
 from common.svm_methods import LaplacePrecomputed
 from common.svm_methods import PolyPrecomputed
 from common.svm_methods import KernelSum
 from common.svm_methods import KernelProd
+from common.boosted_svm import BoostedSVM
 
 # n-word classifiers
 from sklearn.neural_network import MLPClassifier
@@ -40,6 +42,12 @@ def custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf", myDegree=1, myCoef0=1
                shrinking = True, probability = False, tol = 0.001) # probability = True
 
 
+def adaboost_svm(div_flag=False, my_c=150, my_gamma_end=100, myKernel='rbf', myDegree=1, myCoef0=1, early_stop=False, debug=True):
+    # boosted support vector machine (ensemble)
+    svmb = BoostedSVM(C=my_c, gammaEnd=my_gamma_end, myKernel=myKernel, myDegree=myDegree, myCoef0=myCoef0,
+                      Diversity=div_flag, early_stop=early_stop, debug=debug)
+    return svmb
+
 def single_svm(my_kernel):
     # support vector machine (single case)
     my_C = 100
@@ -54,6 +62,8 @@ def single_svm(my_kernel):
             
     #return SVC(C=my_C, kernel=my_kernel, degree=2, coef0=my_coef, gamma=my_gamma, shrinking = True, probability = True, tol = 0.001)
     return SVC(kernel=my_kernel, shrinking = True, probability = False, tol = 0.001)#, degree=2, coef0=my_coef, gamma=my_gamma, shrinking = True, probability = True, tol = 0.001)
+
+
 
 def linear_svm():
     # support vector machine (linear case)
@@ -119,11 +129,16 @@ def model_flavors_exotic():
     models_exotic = []
     mut_rate = 0.25
 
-    models_exotic.append(("trad-single-rbf",  custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",      myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "roulette", 0.0))
-    models_exotic.append(("trad-single-rbf",  custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",      myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "roulette", 0.0))
-    models_exotic.append(("trad-single-sig",  custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",      myDegree=1, myCoef0=-1), "default", "sig",  "trad", mut_rate, "auc", "roulette", 0.0))
-    models_exotic.append(("trad-single-pol",  custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",      myDegree=1, myCoef0=+1), "default", "pol",  "trad", mut_rate, "auc", "roulette", 0.0))
-    models_exotic.append(("trad-single-lin",  custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",      myDegree=1, myCoef0=+1), "default", "lin",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-rbf-NOTdiv", adaboost_svm(div_flag=False, my_c=100000, my_gamma_end=10, myKernel='rbf',     myDegree=3, myCoef0=+1), "absv",   "rbf",   "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-sig-NOTdiv", adaboost_svm(div_flag=False, my_c=100000, my_gamma_end=10, myKernel='sigmoid', myDegree=1, myCoef0=-1), "absv",   "sig",   "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-pol-NOTdiv", adaboost_svm(div_flag=False, my_c=100000, my_gamma_end=10, myKernel='rbf',     myDegree=2, myCoef0=+1), "absv",   "pol",   "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-lin-NOTdiv", adaboost_svm(div_flag=False, my_c=100000, my_gamma_end=10, myKernel='linear',  myDegree=1, myCoef0=+1), "absv",   "lin",   "trad", mut_rate, "auc", "roulette", 0.0))
+
+    models_exotic.append(("trad-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                        myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                        myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-single-sig", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                        myDegree=1, myCoef0=-1), "default", "sig",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-single-pol", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                        myDegree=1, myCoef0=+1), "default", "pol",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-single-lin", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                        myDegree=1, myCoef0=+1), "default", "lin",  "trad", mut_rate, "auc", "roulette", 0.0))
 
     
     # models_exotic.append(("trad-single-rbf",  custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "roulette", 0.0))

@@ -161,9 +161,10 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
             gmean = np.sqrt(prec * recall)
             # calculate roc-auc depending on the classifier
             if roc_area=="absv":
-                y_thresholds = model.decision_thresholds(X_test, glob_dec=True)
-                TPR, FPR = roc_curve_adaboost(y_thresholds, Y_test)
-                area = auc(FPR,TPR)
+                # y_thresholds = model.decision_thresholds(X_test, glob_dec=True)
+                # TPR, FPR = roc_curve_adaboost(y_thresholds, Y_test)
+                # area = auc(FPR,TPR)
+                area = 0
                 model.clean()
             elif roc_area=="prob":
                 Y_pred_prob = model.predict_proba(X_test)[:,1]
