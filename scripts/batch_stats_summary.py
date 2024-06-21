@@ -12,10 +12,10 @@ from common import model_maker as mm
 from common import stats_summary as ss
 
 
-process = int(sys.argv[1])      # batch process
-name = str(sys.argv[2])         # sample name
-path = str(sys.argv[3])         # path where code lives
-boot_kfold = str(sys.argv[4])   # use bootstrap or kfold
+process = int(sys.argv[1])       # batch process
+name = str(sys.argv[2])          # sample name
+path = str(sys.argv[3])          # path where code lives
+boot_kfold = str(sys.argv[4])    # use bootstrap or kfold
 exotic_single = str(sys.argv[5]) # use exotic or standard classifiers
 
 model_auc = mm.model_loader_batch(process, exotic_single=exotic_single)[1]
