@@ -31,8 +31,8 @@ class GeneticSelection:
         if len(self.Y_test) > len(self.Y_train):
             self.X_test  = resample(X_test, replace=False, n_samples=10000)
             self.Y_test  = resample(Y_test, replace=False, n_samples=10000)
-        self.y0_index = Y_train[Y_train == -1].index
-        self.y1_index = Y_train[Y_train ==  1].index
+        self.y0_index = Y_train[Y_train == 0].index
+        self.y1_index = Y_train[Y_train == 1].index
         self.population_size=pop_size
         self.chrom_len = chrom_len
         self.n_generations = n_gen # maximum number of iterations
@@ -56,7 +56,7 @@ class GeneticSelection:
         next_generation_x, next_generation_y, next_generation_indexes = self.initialize_population(self.population_size, self.chrom_len)
         for generation in tqdm(range(self.n_generations)):
             n_p_y = len(next_generation_y[next_generation_y==1])
-            n_n_y = len(next_generation_y[next_generation_y==-1])
+            n_n_y = len(next_generation_y[next_generation_y==0])
             print(n_p_y, n_n_y, n_p_y + n_n_y, 'balance check for every generation')
             scores, popx, popy, index = self.fitness_score(next_generation_x, next_generation_y, next_generation_indexes)
             scores, popx, popy, index = self.set_population_size(scores, popx, popy, index, generation, self.population_size)

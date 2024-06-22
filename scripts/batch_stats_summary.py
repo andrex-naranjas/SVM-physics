@@ -32,7 +32,8 @@ if model_auc[2] == "absv":
 print('sample:', name, 'model name:', model_auc[0], '  validation', boot_kfold)
 start = datetime.datetime.now()
 
-auc, prc, f1, rec, acc, gmn, time, n_class, n_train = ss.cross_validation(sample_name="DY",
+# auc, prc, f1, rec, acc, gmn, time, n_class, n_train
+auc, prec_pos, prec_neg, acc, time, n_class, n_train = ss.cross_validation(sample_name="DY",
                                                                           balance_name=balance_name,
                                                                           model=model_auc[1],
                                                                           is_precom=model_auc[2],
@@ -45,19 +46,16 @@ auc, prc, f1, rec, acc, gmn, time, n_class, n_train = ss.cross_validation(sample
                                                                           GA_coef=model_auc[7+1],
                                                                           kfolds=k_folds, n_reps=n_reps, path=path)
 
+col_auc      = pd.DataFrame(data=auc,       columns=["auc"])
+col_prec_pos = pd.DataFrame(data=prec_pos,  columns=["prec_pos"])
+col_prec_neg = pd.DataFrame(data=prec_neg,  columns=["prec_neg"])
+col_acc      = pd.DataFrame(data=acc,       columns=["acc"])
+col_time     = pd.DataFrame(data=time,      columns=["time"])
+col_base     = pd.DataFrame(data=n_class,   columns=["n_base"])
+col_size     = pd.DataFrame(data=n_train,   columns=["n_train"])
 
-col_auc = pd.DataFrame(data=auc,    columns=["auc"])
-col_prc = pd.DataFrame(data=prc,    columns=["prc"])
-col_f1  = pd.DataFrame(data=f1,     columns=["f1"])
-col_rec = pd.DataFrame(data=rec,    columns=["rec"])
-col_acc = pd.DataFrame(data=acc,    columns=["acc"])
-col_gmn = pd.DataFrame(data=gmn,    columns=["gmn"])
-col_time= pd.DataFrame(data=time,   columns=["time"])
-col_base= pd.DataFrame(data=n_class,columns=["n_base"])
-col_size= pd.DataFrame(data=n_train,columns=["n_train"])
-
-df = pd.concat([col_auc["auc"], col_prc["prc"], col_f1["f1"], col_rec["rec"], col_acc["acc"], col_gmn["gmn"], col_time["time"], col_base["n_base"], col_size["n_train"]],
-               axis=1, keys=["auc", "prc", "f1", "rec", "acc", "gmn", "time", "n_base", "n_train"])
+df = pd.concat([col_auc["auc"], col_prec_pos["prec_pos"], col_prec_neg["prec_neg"], col_acc["acc"], col_time["time"], col_base["n_base"], col_size["n_train"]],
+               axis=1, keys=["auc", "prec_pos", "prec_neg", "acc", "time", "n_base", "n_train"])
 
 dir_name_csv = path + "/results/stats_results/"+name+"/"+boot_kfold+"/"
 

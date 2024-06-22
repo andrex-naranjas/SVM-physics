@@ -17,7 +17,6 @@ import common.model_maker as mm
 import data.data_visualization as dv
 from common.genetic_selection import GeneticSelection
 
-
 # statsmodel includes
 from statsmodels.stats.multicomp import pairwise_tukeyhsd,MultiComparison
 from statsmodels.stats.diagnostic import lilliefors
@@ -28,8 +27,6 @@ from scipy.stats import ttest_ind
 from scipy.stats import wilcoxon
 from scipy.stats import f_oneway
 from scipy.stats import norm,normaltest,shapiro,chisquare,kstest
-
-
 
 
 
@@ -56,7 +53,6 @@ def tukey_test(score_array):
     return MultiComp2.tukeyhsd(0.05)
 
 
-
 def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, roc_area, selection, GA_mut=0.25, GA_score='', GA_selec='', GA_coef=0.5, kfolds=1, n_reps=1, path='.'):
     
     # fetch data_frame without preparation
@@ -68,8 +64,14 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
     else:
         sample_train_df, sample_test_df = sample_df_temp
 
-    area_scores,prec_scores,f1_scores,recall_scores,acc_scores,gmean_scores,time_scores = ([]),([]),([]),([]),([]),([]),([])
-    n_class_scores, n_train_scores = ([]), ([])
+    # area_scores,prec_scores,f1_scores,recall_scores,acc_scores,gmean_scores,time_scores = ([]),([]),([]),([]),([]),([]),([])
+    area_scores     = ([])
+    prec_pos_scores = ([])
+    prec_neg_scores = ([])
+    acc_scores      = ([])
+    n_class_scores  = ([])
+    n_train_scores  = ([])
+    time_scores     = ([])
         
     X, Y = data.dataset(sample_name=sample_name, data_set=sample_df,
                         sampling=True, split_sample=0.0)
@@ -91,12 +93,12 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
     elif balance=="1quart_3quart":
         size_train_sig = int(5000*0.25)
         size_train_bkg = int(5000*0.75)
-    elif balance=="7oct_1oct":
-        size_train_sig = int(5000*0.875)
-        size_train_bkg = int(5000*0.125)
-    elif balance=="1oct_7oct":
-        size_train_sig = int(5000*0.125)
-        size_train_bkg = int(5000*0.875)
+    elif balance=="9dec_1dec":
+        size_train_sig = int(5000*0.9)
+        size_train_bkg = int(5000*0.1)
+    elif balance=="1dec_9dec":
+        size_train_sig = int(5000*0.1)
+        size_train_bkg = int(5000*0.9)
     
     X = X.drop("z_eta_og", axis=1)
     X = X.drop("z_mass_og", axis=1)
@@ -133,8 +135,8 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
                                             pop_size=10, chrom_len=sample_chromn_len, n_gen=50, coef=GA_coef,
                                             mut_rate=GA_mut, score_type=GA_score, selec_type=GA_selec)
             GA_selection.execute()
-            GA_train_indexes = GA_selection.best_population()
-            X_train, Y_train, X_test, Y_test = data.dataset(sample_name=sample_name, indexes=GA_train_indexes)
+            GA_train_indexes = GA_selection.best_population()            
+            X_train, Y_train, X_test, Y_test = data.dataset_index(X, Y, split_indexes=GA_train_indexes)
             print(len(X_train), len(Y_test), len(GA_train_indexes), 'important check for GA outcome')
             print(len(Y_train[Y_train==1]), 'important check for GA outcome')
 
@@ -153,18 +155,17 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
                 no_zero_classifiers = False
                 
         if no_zero_classifiers:
-            y_pred = model.predict(X_test)
-            prec = precision_score(Y_test, y_pred)
-            f1 = f1_score(Y_test, y_pred)
-            recall = recall_score(Y_test, y_pred)
-            acc = accuracy_score(Y_test, y_pred)
-            gmean = np.sqrt(prec * recall)
+            y_pred   = model.predict(X_test)
+            prec_pos = precision_score(Y_test, y_pred, pos_label=pos_label)
+            prec_neg = precision_score(Y_test, y_pred, pos_label=neg_label)
+            acc      = accuracy_score(Y_test, y_pred)
+           
             # calculate roc-auc depending on the classifier
             if roc_area=="absv":
                 # y_thresholds = model.decision_thresholds(X_test, glob_dec=True)
                 # TPR, FPR = roc_curve_adaboost(y_thresholds, Y_test)
                 # area = auc(FPR,TPR)
-                area = 0
+                area = roc_auc_score(Y_test, y_pred)
                 model.clean()
             elif roc_area=="prob":
                 Y_pred_prob = model.predict_proba(X_test)[:,1]
@@ -176,38 +177,43 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
                 area = 0
 
             end = time.time()
-            time_scores    = np.append(time_scores, end-start)
-            area_scores    = np.append(area_scores, area)
-            prec_scores    = np.append(prec_scores, prec)
-            f1_scores      = np.append(f1_scores,   f1)
-            recall_scores  = np.append(recall_scores, recall)
-            acc_scores     = np.append(acc_scores, acc)
-            gmean_scores   = np.append(gmean_scores, gmean)
+            time_scores     = np.append(time_scores, end-start)
+            
+            area_scores     = np.append(area_scores, area)
+            prec_pos_scores = np.append(prec_pos_scores, prec_pos)
+            prec_neg_scores = np.append(prec_neg_scores, prec_neg)
+            acc_scores      = np.append(acc_scores, acc)
+
             n_class_scores = np.append(n_class_scores, n_base_class)
             n_train_scores = np.append(n_train_scores, len(X_train))
         else: # this needs to be re-checked carefully
             end = time.time()
-            time_scores    = np.append(time_scores, end-start)
-            area_scores    = np.append(area_scores, 0)
-            prec_scores    = np.append(prec_scores, 0)
-            f1_scores      = np.append(f1_scores,   0)
-            recall_scores  = np.append(recall_scores, 0)
-            acc_scores     = np.append(acc_scores, 0)
-            gmean_scores   = np.append(gmean_scores, 0)
+            time_scores     = np.append(time_scores, end-start)
+
+            area_scores     = np.append(area_scores, 0)
+            prec_pos_scores = np.append(prec_pos_scores, prec_pos)
+            prec_neg_scores = np.append(prec_neg_scores, prec_neg)
+            acc_scores      = np.append(acc_scores, acc)
+            
             n_class_scores = np.append(n_class_scores, 0)
             n_train_scores = np.append(n_train_scores, len(X_train))
 
-    return area_scores,prec_scores,f1_scores,recall_scores,acc_scores,gmean_scores,time_scores,n_class_scores,n_train_scores
+    return area_scores,prec_pos_scores,prec_neg_scores,acc_scores,time_scores,n_class_scores,n_train_scores
 
 
 
 def stats_results(name, balance_name, n_cycles, kfolds, n_reps, boot_kfold ='', split_frac=0.6):
     # arrays to store the scores
-    mean_auc,mean_prc,mean_f1,mean_rec,mean_acc,mean_gmn = ([]),([]),([]),([]),([]),([])
-    std_auc,std_prc,std_f1,std_rec,std_acc,std_gmn = ([]),([]),([]),([]),([]),([])
-    auc_values,prc_values,f1_values,rec_values,acc_values,gmn_values = [],[],[],[],[],[]
-    names = []
 
+    auc_values     , mean_auc     , std_auc      = ([]),([]),([])
+    prec_pos_values, mean_prec_pos, std_prec_pos = ([]),([]),([])
+    prec_neg_values, mean_prec_neg, std_prec_neg = ([]),([]),([])
+    acc_values     , mean_acc     , std_acc      = ([]),([]),([])
+    n_class_values , mean_n_class , std_n_class  = ([]),([]),([])
+    n_train_values , mean_n_train , std_n_train  = ([]),([]),([])
+    time_values    , mean_time    , std_time     = ([]),([]),([])
+    names = []
+    
     # load models and auc methods
     models_auc = mm.model_flavors_exotic()  # models_auc = mm.model_loader_batch("boot", name)
     
@@ -216,48 +222,50 @@ def stats_results(name, balance_name, n_cycles, kfolds, n_reps, boot_kfold ='', 
             sys.exit("you are not ready for bootstrap")
         elif boot_kfold == 'kfold':
 
-            auc, prc, f1, rec, acc, gmn, time, n_class, n_train = cross_validation(sample_name=name, balance_name=balance_name, is_precom=False, kernel_fcn=None, model=models_auc[i][1],  roc_area=models_auc[i][2],
-                                                                                   selection=models_auc[i][3], GA_mut=models_auc[i][4], GA_score=models_auc[i][5],
-                                                                                   GA_selec=models_auc[i][6], GA_coef=models_auc[i][7], kfolds=kfolds, n_reps=n_reps)
+            auc, prec_pos, prec_neg, acc, time, n_class, n_train = cross_validation(sample_name=name,
+                                                                                    balance_name=balance_name,
+                                                                                    model=models_auc[i][1],
+                                                                                    is_precom=models_auc[i][2],
+                                                                                    kernel_fcn=models_auc[i][3],
+                                                                                    roc_area="deci",
+                                                                                    selection=models_auc[i][3+1],
+                                                                                    GA_mut=models_auc[i][4+1],
+                                                                                    GA_score=models_auc[i][5+1],
+                                                                                    GA_selec=models_auc[i][6+1],
+                                                                                    GA_coef=models_auc[i][7+1],
+                                                                                    kfolds=kfolds, n_reps=n_reps)
         auc_values.append(auc)
-        prc_values.append(prc)
-        f1_values.append(f1)
-        rec_values.append(rec)
+        prec_pos_values.append(prec_pos)
+        prec_neg_values.append(prec_neg)
         acc_values.append(acc)
-        gmn_values.append(gmn)
         
         mean_auc = np.append(mean_auc,  np.mean(auc))
-        mean_prc = np.append(mean_prc,  np.mean(prc))
-        mean_f1  = np.append(mean_f1,   np.mean(f1))
-        mean_rec = np.append(mean_rec,  np.mean(rec))
+        mean_prec_pos = np.append(mean_prec_pos,  np.mean(prec_pos))
+        mean_prec_neg = np.append(mean_prec_neg,  np.mean(prec_neg))
         mean_acc = np.append(mean_acc,  np.mean(acc))
-        mean_gmn = np.append(mean_gmn,  np.mean(gmn))
         
         std_auc = np.append(std_auc,  np.std(auc))
-        std_prc = np.append(std_prc,  np.std(prc))
-        std_f1  = np.append(std_f1,   np.std(f1))
-        std_rec = np.append(std_rec,  np.std(rec))
+        std_prec_pos = np.append(std_prec_pos,  np.std(prec_pos))
+        std_prec_pos = np.append(std_prec_neg,  np.std(prec_neg))
         std_acc = np.append(std_acc,  np.std(acc))
-        std_gmn = np.append(std_gmn,  np.std(gmn))
         
         # store model names, for later use in latex tables
         names.append(models_auc[i][0])
     
-    # tukey tests
-    tukey_auc  =  tukey_test(np.array(auc_values))
-    tukey_prc  =  tukey_test(np.array(prc_values))
-    tukey_f1   =  tukey_test(np.array(f1_values))  
-    tukey_rec  =  tukey_test(np.array(rec_values)) 
-    tukey_acc  =  tukey_test(np.array(acc_values))
-    tukey_gmn  =  tukey_test(np.array(gmn_values))
+    print(np.array(prec_pos_values))
+    # # tukey tests
+    # tukey_auc      =  tukey_test(np.array(auc_values))
+    # tukey_prc_pos  =  tukey_test(np.array(prec_pos_values))
+    # tukey_prc_pos  =  tukey_test(np.array(prec_neg_values))
+    # tukey_acc  =  tukey_test(np.array(acc_values))
                                  
-    # latex tables
-    f_tukey_noDiv = open('./tables/tukey_'+balance_name+'_'+boot_kfold+'_noDiv.tex', "w")
-    dv.latex_table_tukey(names, False, mean_auc, std_auc, tukey_auc, mean_prc, std_prc,  tukey_prc, mean_f1, std_f1,  tukey_f1,
-                         mean_rec, std_rec,  tukey_rec, mean_acc, std_acc,  tukey_acc, mean_gmn, std_gmn,  tukey_gmn,  f_tukey_noDiv)
-    f_tukey_noDiv.close()
+    # # latex tables
+    # f_tukey_noDiv = open('./tables/tukey_'+balance_name+'_'+boot_kfold+'_noDiv.tex', "w")
+    # dv.latex_table_tukey(names, False, mean_auc, std_auc, tukey_auc, mean_prc_pos, std_prc_pos,  tukey_prc_pos, mean_prc_neg, std_prc_neg, tukey_prc_neg,
+    #                      mean_acc, std_acc,  tukey_acc,  f_tukey_noDiv)
+    # f_tukey_noDiv.close()
 
-    f_tukey_div = open('./tables/tukey_'+balance_name+'_'+boot_kfold+'_div.tex', "w")
-    dv.latex_table_tukey(names, True, mean_auc, std_auc, tukey_auc, mean_prc, std_prc,  tukey_prc, mean_f1, std_f1, tukey_f1,
-                         mean_rec, std_rec,  tukey_rec, mean_acc, std_acc, tukey_acc, mean_gmn, std_gmn, tukey_gmn, f_tukey_div)
-    f_tukey_div.close()
+    # f_tukey_div = open('./tables/tukey_'+balance_name+'_'+boot_kfold+'_div.tex', "w")
+    # dv.latex_table_tukey(names, True,  mean_auc, std_auc, tukey_auc, mean_prc_pos, std_prc_pos, tukey_prc_pos, mean_prc_neg, std_prc_neg, tukey_prc_neg,
+    #                      mean_acc, std_acc,  tukey_acc,  f_tukey_noDiv)
+    # f_tukey_div.close()

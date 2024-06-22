@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import os
 
 
-sample_list = ['half_half', '1quart_3quart', '3quart_1quart', '1oct_7oct', '7oct_1oct']
+sample_list = ['half_half', '1quart_3quart', '3quart_1quart', '1dec_9dec', '9dec_1dec']
 color = ['red','blue','green','black','orange']
 
 # sample_list = ['titanic', 'cancer', 'german', 'heart', 'solar', 'car', 'ecoli', 'wine', 'abalone'] # 'connect','adult']
@@ -29,9 +29,9 @@ p_file_data_frame = pd.DataFrame(p_file, columns = ['name'])
 
 
 def plotmetric(metric_list, name, share):
-    fig, (ax1, ax2, ax3) = plt.subplots(3,figsize=(14.5,8), sharex=True,sharey=share)
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, figsize=(14.5,8), sharex=True,sharey=share)
     q = 0
-    axes = [ax1, ax2, ax3] # interates "q"
+    axes = [ax1, ax2, ax3, ax4] # interates "q"
     for metric in metric_list:
         #plt.rcParams["figure.figsize"] = [15, 5]
         #plt.rcParams["figure.autolayout"] = True
@@ -86,7 +86,7 @@ def plotmetric(metric_list, name, share):
         plt.savefig(workpath +"/plots/" +name+'combined.pdf')
 
 
-met = ['acc', 'prc', 'auc']
+met = ['acc', 'prec_pos', 'prec_neg',  'auc']
 ric = ['time', 'n_base', 'n_train']
 plotmetric(met, 'first', False)
 plotmetric(ric, 'second', False)

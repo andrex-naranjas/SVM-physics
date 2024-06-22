@@ -91,7 +91,7 @@ class data_preparation:
                 print(Y.head())#, Y.head())
 
          # return X,Y without any spliting (for bootstrap and kfold-CV)
-        if sampling or split_sample==0.0:
+        if sampling or split_sample==0.0 and indexes is None:
             if not train_test:
                 return X,Y
             else:
@@ -170,6 +170,20 @@ class data_preparation:
 
         return X_train, Y_train, X_test, Y_test
 
+
+    def dataset_index(self, X, Y, split_indexes=None, train_test=False):
+        '''
+        Method to ...
+        '''
+
+        if not train_test:
+            X_train, X_test, Y_train, Y_test = self.indexes_split(X, Y, split_indexes=split_indexes, train_test=train_test)
+        else:
+            X_train, X_test, Y_train, Y_test = self.indexes_split(X_train, Y_train, X_test, Y_test,
+                                                                      split_indexes=split_indexes, train_test=train_test)
+
+        return X_train, Y_train, X_test, Y_test
+        
     
     def indexes_split(self, X, Y, x_test=None, y_test=None, split_indexes=None, train_test=False):
         '''
