@@ -159,6 +159,38 @@ class SigmoidPrecomputed():
     def compute(self):
         return np.array([[self.sigmoid_explicit(i, j) for j in self.y ] for i in self.x])
 
+    
+class Phys1Precomputed():
+    """
+    Class that computes by hand a sigmoid kernel
+    Returns a numpy array
+    """
+    def __init__(self, x, gamma=0.01, coef=0):
+        gamma = 100
+        print("check phys1")
+        self.gamma = gamma
+        self.coef = coef
+        self.x = np.array(x[0])
+        if len(x)==1:
+            self.y = np.array(x[0])
+        elif len(x)==2:
+            self.y = np.array(x[1])
+        else:
+            print("Format not supported. Exiting...")
+            sys.exit()
+
+    def phys1_explicit(self, v1, v2):
+        prod = 0
+        # print(v1)
+        for i in range(0, len(v1)):
+            prod +=  10*(v1[i] * v2[i])**2 + 10*(v1[i] * v2[i]) + (0.1)*(v1[i] * v2[i])*math.exp((1.0)*((v1[i] * v2[i])**1)) #+  (0.1)*(v1[i] * v2[i])*math.exp((-1.0)*((v1[i] * v2[i])**1)) 
+        prod = self.gamma * prod
+        return prod
+  
+    def compute(self):
+        return np.array([[self.phys1_explicit(i, j) for j in self.y ] for i in self.x])
+
+
 
 class KernelSum():
     """
@@ -211,13 +243,20 @@ def compute_kernel(kernel_fcn, X_train, X_test=None, alphas=[1, 1]):
     """
     Compute the kernel matrix
     """
-    kernel_fcn = [*set(kernel_fcn.split("_"))]
-    kernel_fcn_temp = kernel_fcn.copy()
+    if kernel_fcn=="phys2":
+        X_train = X_train[['reco_Z_masses', 'e_e', 'e_pos']]
 
     if X_test is None:
         X = [X_train]
     else:
+        if kernel_fcn=="phys2":
+            X_test = X_test[['reco_Z_masses', 'e_e', 'e_pos']]
+            print(X_test, X_train)
+        
         X = [X_test, X_train]
+        
+    kernel_fcn = [*set(kernel_fcn.split("_"))]
+    kernel_fcn_temp = kernel_fcn.copy()
 
     matrices_kernels = []
     while len(kernel_fcn_temp) != 0:
@@ -246,6 +285,11 @@ def compute_kernel(kernel_fcn, X_train, X_test=None, alphas=[1, 1]):
             
         if  "prd" in kernel_fcn_temp:
             kernel_fcn_temp.remove("prd")
+
+        if "phys1" in kernel_fcn_temp:
+            matrices_kernels.append(Phys1Precomputed(X))
+            kernel_fcn_temp.remove("phys1")
+            
         
     if len(matrices_kernels)==1:
         matrix_kernel = matrices_kernels[0].compute()

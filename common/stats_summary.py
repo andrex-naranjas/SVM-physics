@@ -85,20 +85,20 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
     size_test = 1000
 
     if balance =="half_half":
-        size_train_sig = 5000
-        size_train_bkg = 5000
+        size_train_sig = int(size_train*0.5)
+        size_train_bkg = int(size_train*0.5)
     elif balance=="3quart_1quart":
-        size_train_sig = int(5000*0.75)
-        size_train_bkg = int(5000*0.25)
+        size_train_sig = int(size_train*0.75)
+        size_train_bkg = int(size_train*0.25)
     elif balance=="1quart_3quart":
-        size_train_sig = int(5000*0.25)
-        size_train_bkg = int(5000*0.75)
+        size_train_sig = int(size_train*0.25)
+        size_train_bkg = int(size_train*0.75)
     elif balance=="9dec_1dec":
-        size_train_sig = int(5000*0.9)
-        size_train_bkg = int(5000*0.1)
+        size_train_sig = int(size_train*0.9)
+        size_train_bkg = int(size_train*0.1)
     elif balance=="1dec_9dec":
-        size_train_sig = int(5000*0.1)
-        size_train_bkg = int(5000*0.9)
+        size_train_sig = int(size_train*0.1)
+        size_train_bkg = int(size_train*0.9)
     
     X = X.drop("z_eta_og", axis=1)
     X = X.drop("z_mass_og", axis=1)
@@ -118,7 +118,7 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
     X = X.drop("class", axis=1)
 
     # n-k fold cross validation, n_cycles = n_splits * n_repeats
-    rkf = RepeatedKFold(n_splits = kfolds, n_repeats = n_reps, random_state = 1) # set random state=1 for reproducibility
+    rkf = RepeatedKFold(n_splits = kfolds, n_repeats = n_reps, random_state = None) # set random state=1 for reproducibility
     for i, (train_index, test_index) in enumerate(rkf.split(X)):
         X_train, X_test = X.loc[train_index], X.loc[test_index]
         Y_train, Y_test = Y.loc[train_index], Y.loc[test_index]
@@ -198,6 +198,7 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
             n_class_scores = np.append(n_class_scores, 0)
             n_train_scores = np.append(n_train_scores, len(X_train))
 
+    del model
     return area_scores,prec_pos_scores,prec_neg_scores,acc_scores,time_scores,n_class_scores,n_train_scores
 
 
@@ -253,6 +254,7 @@ def stats_results(name, balance_name, n_cycles, kfolds, n_reps, boot_kfold ='', 
         names.append(models_auc[i][0])
     
     print(np.array(prec_pos_values))
+    print(np.mean(np.array(prec_pos_values)), "mean value")
     # # tukey tests
     # tukey_auc      =  tukey_test(np.array(auc_values))
     # tukey_prc_pos  =  tukey_test(np.array(prec_pos_values))

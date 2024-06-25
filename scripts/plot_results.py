@@ -21,7 +21,7 @@ p_file = []
 file_list = []
 for dire in dire_list:
     f = os.path.splitext(dire)[0]
-    if f[0:3]=='gen' or f[0:4]=='trad':
+    if f[0:3]=='gen' or f[0:4]=='trad' or f[0:6]=='physi1': 
         p_file.append(f.replace('_kfold', ''))
         file_list.append(dire)
 

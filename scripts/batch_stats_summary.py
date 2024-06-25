@@ -23,7 +23,7 @@ model_auc = mm.model_loader_batch(process, exotic_single=exotic_single)[1]
 model_auc_names = mm.model_loader_batch(process, exotic_single=exotic_single)[0]
 n_cycles = 10
 k_folds  = 5
-n_reps   = 3
+n_reps   = 10
 roc_area = "deci"
 
 if model_auc[2] == "absv":
