@@ -84,7 +84,7 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
     pos_label = 1
     neg_label = 0
 
-    size_train = 500
+    size_train = 5000
     size_test = 1000
 
     if balance =="half_half":
