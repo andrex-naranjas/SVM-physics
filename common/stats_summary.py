@@ -3,8 +3,11 @@
  Authors: A. Ramirez-Morales
 -----------------------------------------
 """
+import os
+import sys
 import numpy as np
 import time
+import pandas as pd
 
 from sklearn.metrics import accuracy_score,auc,precision_score,roc_auc_score,f1_score,recall_score
 from sklearn.model_selection import RepeatedKFold
@@ -81,7 +84,7 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
     pos_label = 1
     neg_label = 0
 
-    size_train = 5000
+    size_train = 500
     size_test = 1000
 
     if balance =="half_half":
@@ -214,6 +217,8 @@ def stats_results(name, balance_name, n_cycles, kfolds, n_reps, boot_kfold ='', 
     n_train_values , mean_n_train , std_n_train  = ([]),([]),([])
     time_values    , mean_time    , std_time     = ([]),([]),([])
     names = []
+
+    path = "."
     
     # load models and auc methods
     models_auc = mm.model_flavors_exotic()  # models_auc = mm.model_loader_batch("boot", name)
@@ -235,6 +240,27 @@ def stats_results(name, balance_name, n_cycles, kfolds, n_reps, boot_kfold ='', 
                                                                                     GA_selec=models_auc[i][6+1],
                                                                                     GA_coef=models_auc[i][7+1],
                                                                                     kfolds=kfolds, n_reps=n_reps)
+            col_auc      = pd.DataFrame(data=auc,       columns=["auc"])
+            col_prec_pos = pd.DataFrame(data=prec_pos,  columns=["prec_pos"])
+            col_prec_neg = pd.DataFrame(data=prec_neg,  columns=["prec_neg"])
+            col_acc      = pd.DataFrame(data=acc,       columns=["acc"])
+            col_time     = pd.DataFrame(data=time,      columns=["time"])
+            col_base     = pd.DataFrame(data=n_class,   columns=["n_base"])
+            col_size     = pd.DataFrame(data=n_train,   columns=["n_train"])
+
+            df = pd.concat([col_auc["auc"], col_prec_pos["prec_pos"], col_prec_neg["prec_neg"], col_acc["acc"], col_time["time"], col_base["n_base"], col_size["n_train"]],
+                           axis=1, keys=["auc", "prec_pos", "prec_neg", "acc", "time", "n_base", "n_train"])
+
+            dir_name_csv = path + "/results/stats_results/"+name+"/"+boot_kfold+"/"
+
+            if not os.path.exists(dir_name_csv):
+                os.makedirs(dir_name_csv)
+    
+            name_csv = dir_name_csv + models_auc[i][0]+"_"+boot_kfold+".csv" 
+            df.to_csv(str(name_csv), index=False)
+
+
+            
         auc_values.append(auc)
         prec_pos_values.append(prec_pos)
         prec_neg_values.append(prec_neg)

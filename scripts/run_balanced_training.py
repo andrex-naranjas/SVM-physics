@@ -47,6 +47,10 @@ sample_input = sys.argv[1]
 
 data = data_preparation(drop_class=False)
 
+n_cycles = 10
+k_folds  = 5
+n_reps   = 10
+
 for name in sample_list:
     print("Analysing sample: ", name)
     
@@ -56,7 +60,7 @@ for name in sample_list:
 
     start = datetime.datetime.now()
     # kfold cross-validation
-    ss.stats_results(sample_input, balance_name=name, n_cycles=3, kfolds=3, n_reps=3, boot_kfold ="kfold")
+    ss.stats_results(sample_input, balance_name=name, n_cycles=n_cycles, kfolds=k_folds, n_reps=n_reps, boot_kfold ="kfold")
     end = datetime.datetime.now()
     elapsed_time = end - start
 
