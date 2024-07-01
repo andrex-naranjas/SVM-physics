@@ -78,7 +78,8 @@ def plotmetric(metric_list, name, share):
         plt.tight_layout()
         plt.subplots_adjust(hspace=0.1,right=0.85)  
         #fig.subplots_adjust(right=0.85)  
-        plt.legend(sample_list, prop={"size":14},loc='lower right', bbox_to_anchor=(1.16, 0.7), frameon=False)
+        #plt.legend(sample_list, prop={"size":14},loc='lower right', bbox_to_anchor=(1.16, 0.7), frameon=False)
+        plt.legend(sample_list, prop={"size":10},loc='upper left', bbox_to_anchor=(0.8, 3.9), frameon=False)
         #  fig.tight_layout()
         #  plt.savefig(u+'subplot.pdf')
         if not os.path.exists(workpath +"/plots/"):

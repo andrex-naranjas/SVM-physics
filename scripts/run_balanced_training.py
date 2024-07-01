@@ -1,4 +1,4 @@
-# simple dy (for testing)
+# author: Andres Ramirez-Morales
 # usage: python3 scripts/simple_dy_training.py DY
 import sys
 import numpy as np
@@ -16,22 +16,13 @@ from sklearn.tree import DecisionTreeClassifier
 from common.data_preparation import data_preparation
 from common.svm_methods import RBFPrecomputed
 from common.boosted_svm import BoostedSVM
-#from common.common_methods import roc_curve_adaboost,plot_roc_curve
 import common.model_maker as mm
 import data.data_utils as du
-
 import common.stats_summary as ss
-
-# import model_comparison as mc
-# import data_visualization as dv
-# from model_performance import model_performance
-# import stats_summary as ss
-# from genetic_selection import genetic_selection
 
 
 if len(sys.argv) != 2:
     sys.exit("Provide data sample name. Try again!")
-
 
 sample_input = sys.argv[1]
 
@@ -60,7 +51,9 @@ for name in sample_list:
 
     start = datetime.datetime.now()
     # kfold cross-validation
-    ss.stats_results(sample_input, balance_name=name, n_cycles=n_cycles, kfolds=k_folds, n_reps=n_reps, boot_kfold ="kfold")
+    #ss.stats_results(sample_input, balance_name=name, n_cycles=n_cycles, kfolds=k_folds, n_reps=n_reps, boot_kfold ="kfold")
+    # wilcoxon stats
+    ss.statistical_tests(sample_name='9dec_1dec')
     end = datetime.datetime.now()
     elapsed_time = end - start
 
@@ -69,7 +62,6 @@ for name in sample_list:
     print("END")
 
     # model = BoostedSVM(C=100000, gammaEnd=10, myKernel='rbf', myDegree=3, myCoef0=+1, Diversity=False, early_stop=False, debug=True)
-
     # model.fit(X_train.drop("class", axis=1), X_train["class"])
 
     # #Y_pred_dec = model.decision_function(X_test.drop(species, axis=1))
@@ -78,7 +70,6 @@ for name in sample_list:
     # Y_pred = model.predict(X_test.drop("class", axis=1))
     # Y_test_p = X_test["class"]
     # Y_test   = X_test["class"]
-
 
     # acc = accuracy_score(Y_test_p, Y_pred)
     # auc = roc_auc_score(Y_test, Y_pred_dec)

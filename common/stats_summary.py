@@ -78,7 +78,6 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
         
     X, Y = data.dataset(sample_name=sample_name, data_set=sample_df,
                         sampling=True, split_sample=0.0)
-
     species = "class"
     balance = balance_name
     pos_label = 1
@@ -171,11 +170,15 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
                 area = roc_auc_score(Y_test, y_pred)
                 model.clean()
             elif roc_area=="prob":
-                Y_pred_prob = model.predict_proba(X_test)[:,1]
-                area = roc_auc_score(Y_test, Y_pred_prob)
+                # Y_pred_prob = model.predict_proba(X_test)[:,1]
+                # area = roc_auc_score(Y_test, Y_pred_prob)
+                area = roc_auc_score(Y_test, y_pred)
+                model.clean()
             elif roc_area=="deci":
-                Y_pred_dec = model.decision_function(X_test)
-                area = roc_auc_score(Y_test, Y_pred_dec)
+                # Y_pred_dec = model.decision_function(X_test)
+                # area = roc_auc_score(Y_test, Y_pred_dec)
+                area = roc_auc_score(Y_test, y_pred)
+                model.clean()
             else:
                 area = 0
 
@@ -207,8 +210,8 @@ def cross_validation(sample_name, balance_name, model, is_precom, kernel_fcn, ro
 
 
 def stats_results(name, balance_name, n_cycles, kfolds, n_reps, boot_kfold ='', split_frac=0.6):
+    
     # arrays to store the scores
-
     auc_values     , mean_auc     , std_auc      = ([]),([]),([])
     prec_pos_values, mean_prec_pos, std_prec_pos = ([]),([]),([])
     prec_neg_values, mean_prec_neg, std_prec_neg = ([]),([]),([])
@@ -259,7 +262,6 @@ def stats_results(name, balance_name, n_cycles, kfolds, n_reps, boot_kfold ='', 
             name_csv = dir_name_csv + models_auc[i][0]+"_"+boot_kfold+".csv" 
             df.to_csv(str(name_csv), index=False)
 
-
             
         auc_values.append(auc)
         prec_pos_values.append(prec_pos)
@@ -281,19 +283,150 @@ def stats_results(name, balance_name, n_cycles, kfolds, n_reps, boot_kfold ='', 
     
     print(np.array(prec_pos_values))
     print(np.mean(np.array(prec_pos_values)), "mean value")
-    # # tukey tests
-    # tukey_auc      =  tukey_test(np.array(auc_values))
-    # tukey_prc_pos  =  tukey_test(np.array(prec_pos_values))
-    # tukey_prc_pos  =  tukey_test(np.array(prec_neg_values))
-    # tukey_acc  =  tukey_test(np.array(acc_values))
-                                 
-    # # latex tables
-    # f_tukey_noDiv = open('./tables/tukey_'+balance_name+'_'+boot_kfold+'_noDiv.tex', "w")
-    # dv.latex_table_tukey(names, False, mean_auc, std_auc, tukey_auc, mean_prc_pos, std_prc_pos,  tukey_prc_pos, mean_prc_neg, std_prc_neg, tukey_prc_neg,
-    #                      mean_acc, std_acc,  tukey_acc,  f_tukey_noDiv)
-    # f_tukey_noDiv.close()
 
-    # f_tukey_div = open('./tables/tukey_'+balance_name+'_'+boot_kfold+'_div.tex', "w")
-    # dv.latex_table_tukey(names, True,  mean_auc, std_auc, tukey_auc, mean_prc_pos, std_prc_pos, tukey_prc_pos, mean_prc_neg, std_prc_neg, tukey_prc_neg,
-    #                      mean_acc, std_acc,  tukey_acc,  f_tukey_noDiv)
-    # f_tukey_div.close()
+
+def statistical_tests(sample_name='half_half', class_interest=['physi1-single-lap'], metric='AUC', stats_type='student', boot_kfold='kfold'):
+
+    ensembles_pvalues = []
+    selected_values   = []
+    selected_errors   = []
+
+    # make the list of classifier flavors,set here the top classifier we want to compare against to and show in tables
+    for i_name in range(len(class_interest)):
+        # arrays to store the scores
+        auc_values     , mean_auc     , std_auc,      student_auc      = ([]),([]),([]),([])
+        prec_pos_values, mean_prec_pos, std_prec_pos, student_prec_pos = ([]),([]),([]),([])
+        prec_neg_values, mean_prec_neg, std_prec_neg, student_prec_neg = ([]),([]),([]),([])
+        acc_values     , mean_acc     , std_acc,      student_acc      = ([]),([]),([]),([])
+
+        mean_metric = ([])
+        std_metric = ([])
+
+        flavor_names = []
+        flavor_names.append(class_interest[i_name])
+        
+        for i in range(len(mm.model_loader_batch(0, exotic_single='exotic')[0])):
+            flavor_names.append(mm.model_loader_batch(0, exotic_single='exotic')[0][i][0])
+
+        directory = './results/stats_results/'+sample_name+'/'+ boot_kfold
+        nClass  = len(flavor_names)
+        f_names = []
+        matrix  = []
+            
+        for i in range(len(flavor_names)):
+            input_data = pd.read_csv(directory+'/'+flavor_names[i]+'_'+boot_kfold+'.csv')
+
+            print(flavor_names[i], i)
+            auc      = np.array(input_data['auc'])
+            prec_pos = np.array(input_data['prec_pos'])
+            prec_neg = np.array(input_data['prec_neg'])
+            acc      = np.array(input_data['acc'])
+
+            auc_values.append(auc)
+            prec_pos_values.append(prec_pos)
+            prec_neg_values.append(prec_neg)
+            acc_values.append(acc)
+                
+            mean_auc      = np.append(mean_auc,  np.mean(auc))
+            mean_prec_pos = np.append(mean_prec_pos,  np.mean(prec_pos))
+            mean_prec_neg = np.append(mean_prec_neg,  np.mean(prec_neg))
+            mean_acc      = np.append(mean_acc,  np.mean(acc))
+            
+            std_auc      = np.append(std_auc,  np.std(auc))
+            std_prec_pos = np.append(std_prec_pos,  np.std(prec_pos))
+            std_prec_neg = np.append(std_prec_neg,  np.std(prec_neg))
+            std_acc      = np.append(std_acc,  np.std(acc))
+                
+            # check normality
+            # p,alpha = normal_test(auc,alpha=0.05,verbose=True)
+            # dv.simple_plot(auc, pval=p, alpha_in=alpha)
+
+        if stats_type=='student':
+            for i in range(nClass):
+                column = ([])
+                for j in range(nClass):
+                    # print(ttest_ind(auc_values[i], auc_values[j]).pvalue)
+                    if(i==0 and j!=0):
+                        #wilcoxon, ttest_ind
+                        student_auc      = np.append(student_auc,      wilcoxon(auc_values[i], auc_values[j]).pvalue)
+                        student_prec_pos = np.append(student_prec_pos, wilcoxon(prec_pos_values[i], prec_pos_values[j]).pvalue)
+                        student_prec_neg = np.append(student_prec_neg, wilcoxon(prec_neg_values[i], prec_neg_values[j]).pvalue)
+                        student_acc      = np.append(student_acc,      wilcoxon(acc_values[i], acc_values[j]).pvalue)
+                    elif(i==0 and j==0):
+                        student_auc      = np.append(student_auc, 1.)
+                        student_prec_pos = np.append(student_prec_pos, 1.)
+                        student_prec_neg = np.append(student_prec_neg, 1.)
+                        student_acc      = np.append(student_acc, 1.)
+                    if(i!=j):                        
+                        pvalue = wilcoxon(auc_values[i], auc_values[j]).pvalue
+                    else:
+                        pvalue = 1.
+                    
+                    if pvalue < 0.05:
+                        column = np.append(column, 1)
+                    else:
+                        column = np.append(column, -1)
+                                                 
+                matrix.append(column)
+                       
+            matrix = np.array(matrix)
+                        
+            # latex tables
+            table_sample_name=sample_name+'-'+boot_kfold+'-'+stats_type
+            f_student_table = open('./tables/student_'+table_sample_name+'_'+class_interest[i_name]+'.tex', "w")
+            dv.latex_table_student(flavor_names, sample_name, mean_auc, std_auc, student_auc, mean_prec_pos, std_prec_pos,  student_prec_pos,
+                                   mean_prec_neg, std_prec_neg, student_prec_neg,
+                                   mean_acc, std_acc, student_acc, f_student_table)
+            f_student_table.close()
+        
+        elif stats_type == 'tukey':
+            # not working atm 29/06/2024
+            # tukey tests
+            tukey_auc  =  tukey_test(np.array(auc_values))
+            counter  = 0
+            counter2 = 0
+            flag = True        
+            column = ([])
+            for k in range(len(tukey_auc.reject)):
+                counter2+=1
+                if counter2 == 1:
+                    column = np.append(column, -1.)
+                    # column = np.append(column, tukey_auc.pvalues[k])
+                    if tukey_auc.reject[k]: value = 1
+                    else: value = -1
+                    column = np.append(column, value)
+                    if nClass - counter - 2 < counter2:
+                        column = np.flip(column)
+                        zeros = np.zeros(nClass-len(column))
+                        column = np.append(column, zeros)
+                        column = np.flip(column)
+                        matrix.append(column)
+                        column = ([])
+                        counter += 1
+                        counter2 = 0
+            
+            last_column = np.array([-1.])
+            zeros = np.zeros(nClass-len(last_column))
+            last_column = np.append(zeros, last_column)
+            matrix.append(last_column)
+            matrix = np.array(matrix)
+            #matrix = matrix.transpose()
+            tukey_auc  =  tukey_test(np.array(auc_values))
+            tukey_prc  =  tukey_test(np.array(prc_values))
+            tukey_f1   =  tukey_test(np.array(f1_values))
+            tukey_rec  =  tukey_test(np.array(rec_values)) 
+            tukey_acc  =  tukey_test(np.array(acc_values))
+            tukey_gmn  =  tukey_test(np.array(gmn_values))                         
+            # latex tables
+            sample_name+='-'+boot_kfold+'-'+stats_type
+            f_tukey_table = open('./tables/tukey_'+sample_name+'_'+class_interest+'.tex', "w")
+            dv.latex_table_tukey(f_names, sample_name, mean_auc, std_auc, tukey_auc, mean_prc, std_prc,  tukey_prc, mean_f1, std_f1,  tukey_f1,
+                                 mean_rec, std_rec, tukey_rec, mean_acc, std_acc,  tukey_acc, mean_gmn, std_gmn,  tukey_gmn,  f_tukey_table)
+            f_tukey_table.close()
+                            
+        sigmin = 0
+        sigmax = len(flavor_names)
+        cmin = 0
+        cmax = len(flavor_names)
+        dv.plot_stats_2d(matrix, sample_name)
+    
