@@ -28,7 +28,7 @@ sample_input = sys.argv[1]
 
 # make directories
 sample_list = ["half_half", "1quart_3quart", "3quart_1quart", "1dec_9dec", "9dec_1dec"]
-sample_list = ["half_half"]
+#sample_list = ["half_half"]
 du.make_directories(sample_list)
 
 # kernel selection
@@ -45,15 +45,15 @@ n_reps   = 10
 for name in sample_list:
     print("Analysing sample: ", name)
     
-    X_train, Y_train, X_test, Y_test = \
-        data.dataset(sample_name=sample_input, balance_name=name,
-                     sampling=False, split_sample=0.3)
+    # X_train, Y_train, X_test, Y_test = \
+    #     data.dataset(sample_name=sample_input, balance_name=name,
+    #                  sampling=False, split_sample=0.3)
 
     start = datetime.datetime.now()
     # kfold cross-validation
     #ss.stats_results(sample_input, balance_name=name, n_cycles=n_cycles, kfolds=k_folds, n_reps=n_reps, boot_kfold ="kfold")
     # wilcoxon stats
-    ss.statistical_tests(sample_name='9dec_1dec')
+    ss.statistical_tests(sample_name=name)
     end = datetime.datetime.now()
     elapsed_time = end - start
 

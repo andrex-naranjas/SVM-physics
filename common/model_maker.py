@@ -1,7 +1,7 @@
 """
 ---------------------------------------------------
  Code to improve SVM
- Authors: A. Ramirez-Morales and J. Salmon-Gamboa
+ Authors: A. Ramirez-Morales
 ---------------------------------------------------
 """
 import numpy as np
@@ -60,7 +60,6 @@ def single_svm(my_kernel):
         my_C = 10
         my_gamma = 0.1            
     return SVC(kernel=my_kernel, shrinking = True, probability = False, tol = 0.001)#, degree=2, coef0=my_coef, gamma=my_gamma, shrinking = True, probability = True, tol = 0.001)
-
 
 
 def linear_svm():
@@ -128,136 +127,28 @@ def model_flavors_exotic():
     mut_rate = 0.25
 
     # physics inspired
-    # models_exotic.append(("physi1-single-lap",     custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",               myDegree=1, myCoef0=+1), "precomp", "phys1",  "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("physi2-single-lap",     custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",               myDegree=1, myCoef0=+1), "precomp", "phys1",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("physi1-single-lap",     custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",            myDegree=1, myCoef0=+1), "precomp", "phys1",  "trad", mut_rate, "auc", "roulette", 0.0))
 
-    # # selected in prev paper
-    # models_exotic.append(("genHLACC-rbf-NOTdiv", adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='rbf',     myDegree=1, myCoef0=+1), "absv",    "rbf",  "gene", mut_rate, "acc", "highlow", 0.5))
-    # models_exotic.append(("genHLAUC-sig-YESdiv", adaboost_svm(div_flag=True, my_c=100, my_gamma_end=100, myKernel='sigmoid',  myDegree=2, myCoef0=-1), "absv",    "sig",  "gene", mut_rate, "auc", "highlow", 0.5))
-    # models_exotic.append(("genHLACC-pol-YESdiv", adaboost_svm(div_flag=True, my_c=100, my_gamma_end=10, myKernel='poly',      myDegree=2, myCoef0=+1), "absv",    "pol",  "gene", mut_rate, "acc", "highlow", 0.5))
+    # selected in prev paper
+    models_exotic.append(("genHLACC-rbf-NOTdiv", adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='rbf',     myDegree=1, myCoef0=+1), "absv",    "rbf",  "gene", mut_rate, "acc", "highlow", 0.5))
+    models_exotic.append(("genHLAUC-sig-YESdiv", adaboost_svm(div_flag=True, my_c=100, my_gamma_end=100, myKernel='sigmoid',  myDegree=2, myCoef0=-1), "absv",    "sig",  "gene", mut_rate, "auc", "highlow", 0.5))
+    models_exotic.append(("genHLACC-pol-YESdiv", adaboost_svm(div_flag=True, my_c=100, my_gamma_end=10, myKernel='poly',      myDegree=2, myCoef0=+1), "absv",    "pol",  "gene", mut_rate, "acc", "highlow", 0.5))
 
-    # # # basic kernel functions
-    # models_exotic.append(("trad-single-rbf",     custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                       myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "highlow", 0.0))
-    # models_exotic.append(("trad-single-sig",     custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                       myDegree=1, myCoef0=-1), "default", "sig",  "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-single-pol",     custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                       myDegree=1, myCoef0=+1), "default", "pol",  "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-single-lin",     custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                       myDegree=1, myCoef0=+1), "default", "lin",  "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-single-lap",     custom_svm(my_c=100, my_gamma_end=100, myKernel="precomputed",               myDegree=1, myCoef0=+1), "precomp", "lap",  "trad", mut_rate, "auc", "roulette", 0.0))
+    # basic kernel functions
+    models_exotic.append(("trad-single-rbf",     custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                       myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "highlow", 0.0))
+    models_exotic.append(("trad-single-sig",     custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                       myDegree=1, myCoef0=-1), "default", "sig",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-single-pol",     custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                       myDegree=1, myCoef0=+1), "default", "pol",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-single-lin",     custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                       myDegree=1, myCoef0=+1), "default", "lin",  "trad", mut_rate, "auc", "roulette", 0.0))
 
-    # # # combined kernels
-    # models_exotic.append(("trad-sum-rbf-sig",   custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",                myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-sum-rbf-pol",   custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",                myDegree=1, myCoef0=+1), "precomp", "sum_rbf_pol", "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-sum-rbf-lin",   custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",                myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lin", "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-sum-rbf-lap",   custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",                myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lap", "trad", mut_rate, "auc", "roulette", 0.0))
+    # combined kernels
+    models_exotic.append(("trad-sum-rbf-sig",   custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",               myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-sum-rbf-pol",   custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",               myDegree=1, myCoef0=+1), "precomp", "sum_rbf_pol", "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-sum-rbf-lin",   custom_svm(my_c= 100, my_gamma_end=100, myKernel="precomputed",               myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lin", "trad", mut_rate, "auc", "roulette", 0.0))
 
-    models_exotic.append(("trad-rbf-NOTdiv",    adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='rbf',     myDegree=3, myCoef0=+1), "absv",   "rbf",   "trad", mut_rate, "auc", "roulette", 0.0))
-    models_exotic.append(("trad-sig-NOTdiv",    adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='sigmoid', myDegree=1, myCoef0=-1), "absv",   "sig",   "trad", mut_rate, "auc", "roulette", 0.0))
-    models_exotic.append(("trad-pol-NOTdiv",    adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='rbf',     myDegree=2, myCoef0=+1), "absv",   "pol",   "trad", mut_rate, "auc", "roulette", 0.0))
-    models_exotic.append(("trad-lin-NOTdiv",    adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='linear',  myDegree=1, myCoef0=+1), "absv",   "lin",   "trad", mut_rate, "auc", "roulette", 0.0))
-
-    
-    # models_exotic.append(("trad-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                        myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",                        myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "roulette", 0.0))
-
-
-    # models_exotic.append(("genHLAUC-single-rbf", custom_svm(my_c=100, my_gamma_end=10, myKernel="rbf",          myDegree=1, myCoef0=+1), "default", "rbf", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-single-sig", custom_svm(my_c=100, my_gamma_end=100, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "default", "sig", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-single-pol", custom_svm(my_c=100, my_gamma_end=100, myKernel="poly",         myDegree=2, myCoef0=+1), "default", "pol", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-single-lin", custom_svm(my_c=100, my_gamma_end=100, myKernel="linear",       myDegree=1, myCoef0=+1), "default", "lin", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-single-lap", custom_svm(my_c=100, my_gamma_end=10, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "lap", "gene", mut_rate, "auc", "highlow", 0.25))
-
-    
-    
-    # models_exotic.append(("trad-single-rbf",  custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-single-sig",  custom_svm(my_c=100, my_gamma_end=0.1, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "default", "sig",  "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-single-pol",  custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="poly",         myDegree=2, myCoef0=+1), "default", "pol",  "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-single-lin",  custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="linear",       myDegree=1, myCoef0=+1), "default", "lin",  "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-single-lap",  custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "lap",  "trad", mut_rate, "auc", "roulette", 0.0))
-
-    # models_exotic.append(("trad-sum-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-sum-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_pol", "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-sum-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lin", "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-sum-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lap", "trad", mut_rate, "auc", "roulette", 0.0))
-
-    # models_exotic.append(("trad-prd-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-prd-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_pol", "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-prd-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_lin", "trad", mut_rate, "auc", "roulette", 0.0))
-    # models_exotic.append(("trad-prd-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "trad", mut_rate, "auc", "roulette", 0.0))
-
-
-    # models_exotic.append(("genHLAUC-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "default", "rbf", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-single-sig", custom_svm(my_c=100, my_gamma_end=0.1, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "default", "sig", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-single-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="poly",         myDegree=2, myCoef0=+1), "default", "pol", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-single-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="linear",       myDegree=1, myCoef0=+1), "default", "lin", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-single-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "lap", "gene", mut_rate, "auc", "highlow", 0.25))
-
-    # models_exotic.append(("genHLAUC-sum-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-sum-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_pol", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-sum-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lin", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-sum-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "gene", mut_rate, "auc", "highlow", 0.25))
-
-    # models_exotic.append(("genHLAUC-prd-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-prd-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_pol", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-prd-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_lin", "gene", mut_rate, "auc", "highlow", 0.25))
-    # models_exotic.append(("genHLAUC-prd-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "gene", mut_rate, "auc", "highlow", 0.25))
-
-    
-    # models_exotic.append(("genHLACC-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "default", "rbf", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-single-sig", custom_svm(my_c=100, my_gamma_end=0.1, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "default", "sig", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-single-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="poly",         myDegree=2, myCoef0=+1), "default", "pol", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-single-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="linear",       myDegree=1, myCoef0=+1), "default", "lin", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-single-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "lap", "gene", mut_rate, "acc", "roulette", 0.25))
-
-    # models_exotic.append(("genHLACC-sum-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-sum-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_pol", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-sum-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lin", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-sum-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "gene", mut_rate, "acc", "roulette", 0.25))
-
-    # models_exotic.append(("genHLACC-prd-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-prd-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_pol", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-prd-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_lin", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genHLACC-prd-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "gene", mut_rate, "acc", "roulette", 0.25))
-
-
-    # models_exotic.append(("genRLAUC-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "default", "rbf", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-single-sig", custom_svm(my_c=100, my_gamma_end=0.1, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "default", "sig", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-single-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="poly",         myDegree=2, myCoef0=+1), "default", "pol", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-single-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="linear",       myDegree=1, myCoef0=+1), "default", "lin", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-single-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "lap", "gene", mut_rate, "auc", "roulette", 0.25))
-
-    # models_exotic.append(("genRLAUC-sum-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-sum-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_pol", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-sum-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lin", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-sum-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "gene", mut_rate, "auc", "roulette", 0.25))
-
-    # models_exotic.append(("genRLAUC-prd-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-prd-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_pol", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-prd-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_lin", "gene", mut_rate, "auc", "roulette", 0.25))
-    # models_exotic.append(("genRLAUC-prd-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "gene", mut_rate, "auc", "roulette", 0.25))
-
-    
-    # models_exotic.append(("genRLACC-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "default", "rbf", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-single-sig", custom_svm(my_c=100, my_gamma_end=0.1, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "default", "sig", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-single-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="poly",         myDegree=2, myCoef0=+1), "default", "pol", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-single-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="linear",       myDegree=1, myCoef0=+1), "default", "lin", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-single-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "lap", "gene", mut_rate, "acc", "roulette", 0.25))
-
-    # models_exotic.append(("genRLACC-sum-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-sum-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_pol", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-sum-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lin", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-sum-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "gene", mut_rate, "acc", "roulette", 0.25))
-
-    # models_exotic.append(("genRLACC-prd-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-prd-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_pol", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-prd-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_lin", "gene", mut_rate, "acc", "roulette", 0.25))
-    # models_exotic.append(("genRLACC-prd-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "gene", mut_rate, "acc", "roulette", 0.25))
-
-    
-    
-    # models_exotic.append(("genTNAUC-rbf-NOTdiv", adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel="rbf",     myDegree=1, myCoef0=+1), "absv",  "gene", mut_rate, "auc", "tournament", 0.5))
-
-    # models_exotic.append(("genTNACC-rbf-NOTdiv", adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel="rbf",     myDegree=1, myCoef0=+1), "absv",  "gene", mut_rate, "acc", "tournament", 0.5))
-
-
+    models_exotic.append(("trad-rbf-NOTdiv",    adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='rbf',      myDegree=3, myCoef0=+1), "absv",   "rbf",   "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-sig-NOTdiv",    adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='sigmoid',  myDegree=1, myCoef0=-1), "absv",   "sig",   "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-pol-NOTdiv",    adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='rbf',      myDegree=2, myCoef0=+1), "absv",   "pol",   "trad", mut_rate, "auc", "roulette", 0.0))
+    models_exotic.append(("trad-lin-NOTdiv",    adaboost_svm(div_flag=False, my_c=100, my_gamma_end=100, myKernel='linear',   myDegree=1, myCoef0=+1), "absv",   "lin",   "trad", mut_rate, "auc", "roulette", 0.0))
 
     return models_exotic
 

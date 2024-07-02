@@ -183,7 +183,7 @@ class Phys1Precomputed():
         prod = 0
         # print(v1)
         for i in range(0, len(v1)):
-            prod +=  10*(v1[i] * v2[i])**2 + 10*(v1[i] * v2[i]) + (0.1)*(v1[i] * v2[i])*math.exp((1.0)*((v1[i] * v2[i])**1)) #+  (0.1)*(v1[i] * v2[i])*math.exp((-1.0)*((v1[i] * v2[i])**1)) 
+            prod +=  10*(v1[i] * v2[i])**2 + (10.0)*(v1[i] * v2[i]) + (10.0)*(v1[i] * v2[i])*math.exp((1.0)*((v1[i] * v2[i])**1)) #+  (0.1)*(v1[i] * v2[i])*math.exp((-1.0)*((v1[i] * v2[i])**1)) 
         prod = self.gamma * prod
         return prod
   
@@ -243,16 +243,9 @@ def compute_kernel(kernel_fcn, X_train, X_test=None, alphas=[1, 1]):
     """
     Compute the kernel matrix
     """
-    if kernel_fcn=="phys2":
-        X_train = X_train[['reco_Z_masses', 'e_e', 'e_pos']]
-
     if X_test is None:
         X = [X_train]
-    else:
-        if kernel_fcn=="phys2":
-            X_test = X_test[['reco_Z_masses', 'e_e', 'e_pos']]
-            print(X_test, X_train)
-        
+    else:        
         X = [X_test, X_train]
         
     kernel_fcn = [*set(kernel_fcn.split("_"))]
