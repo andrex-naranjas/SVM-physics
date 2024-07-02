@@ -22,6 +22,7 @@ To install, you need to log to a linux machine (see below) and in the terminal t
   conda activate vector
   conda develop .
   ```
+  
 3.1 Update the conda enviroment:
    ```
    conda env update --file config.yml --prune
