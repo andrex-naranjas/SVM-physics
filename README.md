@@ -4,8 +4,9 @@ This repository contains an implementation of support vector machines for high e
 
 ## Framework installation
 
+Log into a linux machine with Anaconda installed.
 
-To install, you need to log to a linux machine (see below) and in the terminal type:
+In the terminal do:
 
 1. Clone the repository:
   ```
